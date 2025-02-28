@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class CarroService {
 
     @Autowired
-    CarroRepository carroRepository;
+    private CarroRepository carroRepository;
 
     @Transactional
     public CarroDetalhadoDTO criarCarro(CarroDTO carroDTO){

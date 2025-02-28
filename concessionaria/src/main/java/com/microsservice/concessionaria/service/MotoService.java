@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class MotoService {
 
     @Autowired
-    MotoRepository motoRepository;
+    private MotoRepository motoRepository;
 
     @Transactional
     public MotoDetalhadaDTO criarMoto(MotoDTO motoDTO){
