@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class CaminhaoService {
 
     @Autowired
-    CaminhaoRepository caminhaoRepository;
+    private CaminhaoRepository caminhaoRepository;
 
     @Transactional
     public CaminhaoDetalhadoDTO criarCaminhao(CaminhaoDTO caminhaoDTO) {
