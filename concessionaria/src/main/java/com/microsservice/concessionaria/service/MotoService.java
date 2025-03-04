@@ -35,6 +35,7 @@ public class MotoService {
         return new MotoDetalhadaDTO(moto);
     }
 
+    //Lista apenas os veiculo em estoque
     public List<MotoDetalhadaDTO> listarMotos(){
         return motoRepository.findByStatus(StatusVeiculo.EM_ESTOQUE).stream()
                 .map(MotoDetalhadaDTO::new)

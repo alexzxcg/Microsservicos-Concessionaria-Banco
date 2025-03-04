@@ -35,6 +35,7 @@ public class CarroService {
         return new CarroDetalhadoDTO(carro);
     }
 
+    //Lista apenas os veiculo em estoque
     public List<CarroDetalhadoDTO> listarCarros() {
         return carroRepository.findByStatus(StatusVeiculo.EM_ESTOQUE).stream()
                 .map(CarroDetalhadoDTO::new)

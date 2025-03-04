@@ -29,6 +29,7 @@ public class CarroFactory extends VeiculoFactory {
         return new Carro(marca, modelo, ano, preco, motor, categoria);
     }
 
+    //Mapeia a categoria do carro de acordo com o motor compativel
     @Override
     protected Categoria definirCategoriaDoVeiculo() {
         String motorNormalizado = motor.trim().toUpperCase();
