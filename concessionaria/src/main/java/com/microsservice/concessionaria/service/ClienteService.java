@@ -8,6 +8,7 @@ import com.microsservice.concessionaria.domain.funcionario.FuncionarioDetalhadoD
 import com.microsservice.concessionaria.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,7 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Transactional
     public ClienteDetalhadoDTO criarCliente(ClienteDTO clienteDTO) {
         // Converte o DTO em Cliente, usando o construtor da classe Funcionario
         Cliente cliente= new Cliente(clienteDTO);

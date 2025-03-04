@@ -7,6 +7,7 @@ import com.microsservice.concessionaria.repository.FuncionarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class FuncionarioService {
     @Autowired
     private FuncionarioRepository funcionarioRepository;
 
+    @Transactional
     public FuncionarioDetalhadoDTO criarFuncionario(@Valid FuncionarioDTO dto) {
         // Converte o DTO em Funcionario, usando o construtor da classe Funcionario
         Funcionario funcionario = new Funcionario(dto);
