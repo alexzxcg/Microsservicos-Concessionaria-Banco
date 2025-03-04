@@ -21,6 +21,7 @@ public class CaminhaoFactory extends VeiculoFactory {
         return new Caminhao(marca, modelo, ano, preco, eixo, categoria);
     }
 
+    //Mapeia a categoria do caminhao de acordo com o numero de eixos
     @Override
     protected Categoria definirCategoriaDoVeiculo() {
         return Optional.ofNullable(

@@ -34,6 +34,7 @@ public class CaminhaoService {
         return new CaminhaoDetalhadoDTO(caminhao);
     }
 
+    //Lista apenas os veiculo em estoque
     public List<CaminhaoDetalhadoDTO> listarCaminhoes() {
         return caminhaoRepository.findByStatus(StatusVeiculo.EM_ESTOQUE).stream()
                 .map(CaminhaoDetalhadoDTO::new)

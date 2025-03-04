@@ -21,6 +21,7 @@ public class MotoFactory extends VeiculoFactory {
         return new Moto(marca, modelo, ano, preco, cilindrada, categoria);
     }
 
+    //Mapeia a categoria da moto de acordo com a potencia da sua cilindrada
     @Override
     protected Categoria definirCategoriaDoVeiculo() {
         return Optional.ofNullable(
