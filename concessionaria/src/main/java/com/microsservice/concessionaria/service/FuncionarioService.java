@@ -24,7 +24,7 @@ public class FuncionarioService {
 
         // Salva e transforma o Funcionario em FuncionarioDetalhadoDTO usando lambda
         return Optional.of(funcionarioRepository.save(funcionario))
-                .map(FuncionarioDetalhadoDTO::new) // usa lambda para converter
+                .map(FuncionarioDetalhadoDTO::new)
                 .orElseThrow(() -> new RuntimeException("Erro ao criar Funcionario")); // Lança exceção se não for encontrado
     }
 

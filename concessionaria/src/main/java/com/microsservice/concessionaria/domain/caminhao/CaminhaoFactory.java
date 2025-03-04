@@ -1,7 +1,6 @@
 package com.microsservice.concessionaria.domain.caminhao;
 
 import com.microsservice.concessionaria.domain.veiculo.Categoria;
-import com.microsservice.concessionaria.domain.veiculo.Veiculo;
 import com.microsservice.concessionaria.domain.veiculo.VeiculoFactory;
 
 import java.math.BigDecimal;
@@ -17,7 +16,7 @@ public class CaminhaoFactory extends VeiculoFactory {
     }
 
     @Override
-    public Veiculo criarVeiculo() {
+    public Caminhao criarVeiculo() {
         Categoria categoria = definirCategoriaDoVeiculo();
         return new Caminhao(marca, modelo, ano, preco, eixo, categoria);
     }

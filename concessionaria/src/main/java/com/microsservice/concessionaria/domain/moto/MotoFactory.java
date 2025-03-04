@@ -1,7 +1,6 @@
 package com.microsservice.concessionaria.domain.moto;
 
 import com.microsservice.concessionaria.domain.veiculo.Categoria;
-import com.microsservice.concessionaria.domain.veiculo.Veiculo;
 import com.microsservice.concessionaria.domain.veiculo.VeiculoFactory;
 
 import java.math.BigDecimal;
@@ -17,7 +16,7 @@ public class MotoFactory extends VeiculoFactory {
     }
 
     @Override
-    public Veiculo criarVeiculo() {
+    public Moto criarVeiculo() {
         Categoria categoria = definirCategoriaDoVeiculo();
         return new Moto(marca, modelo, ano, preco, cilindrada, categoria);
     }

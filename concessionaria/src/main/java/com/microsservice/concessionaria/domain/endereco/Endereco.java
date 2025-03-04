@@ -25,30 +25,6 @@ public class Endereco {
         this.complemento = dto.complemento();
     }
 
-    public void atualizarInformacoes(EnderecoDTO dto) {
-        if (dto.logradouro() != null) {
-            this.logradouro = dto.logradouro();
-        }
-        if (dto.bairro() != null) {
-            this.bairro = dto.bairro();
-        }
-        if (dto.cep() != null) {
-            this.cep = dto.cep();
-        }
-        if (dto.uf() != null) {
-            this.uf = dto.uf();
-        }
-        if (dto.cidade() != null) {
-            this.cidade = dto.cidade();
-        }
-        if (dto.numero() != null) {
-            this.numero = dto.numero();
-        }
-        if (dto.complemento() != null) {
-            this.complemento = dto.complemento();
-        }
-    }
-
     public String getLogradouro() {
         return logradouro;
     }

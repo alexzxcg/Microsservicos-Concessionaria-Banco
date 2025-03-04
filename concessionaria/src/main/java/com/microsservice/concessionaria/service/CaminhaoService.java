@@ -28,7 +28,7 @@ public class CaminhaoService {
                 caminhaoDTO.preco(),
                 caminhaoDTO.eixos()
         );
-        Caminhao caminhao = (Caminhao) caminhaoFactory.criarVeiculo();
+        Caminhao caminhao = caminhaoFactory.criarVeiculo();
         caminhaoRepository.save(caminhao);
 
         return new CaminhaoDetalhadoDTO(caminhao);
@@ -41,7 +41,7 @@ public class CaminhaoService {
     }
 
     public CaminhaoDetalhadoDTO buscarCaminhaoPorId(Long id) {
-        return caminhaoRepository.findById(id).map(caminhao -> new CaminhaoDetalhadoDTO(caminhao))
+        return caminhaoRepository.findById(id).map(CaminhaoDetalhadoDTO::new)
                 .orElseThrow(() -> new RuntimeException("Caminhão não encontrado"));
     }
 }
