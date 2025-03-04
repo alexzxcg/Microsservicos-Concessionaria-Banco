@@ -25,7 +25,7 @@ public class ClienteService {
 
         // Salva e transforma o Cliente em ClienteoDetalhadoDTO usando lambda
         return Optional.of(clienteRepository.save(cliente))
-                .map(ClienteDetalhadoDTO::new) // usa lambda para converter
+                .map(ClienteDetalhadoDTO::new)
                 .orElseThrow(() -> new RuntimeException("Erro ao criar Funcionario")); // Lança exceção se não for encontrado
     }
 

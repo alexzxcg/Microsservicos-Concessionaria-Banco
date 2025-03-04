@@ -29,7 +29,7 @@ public class MotoService {
                 motoDTO.cilindradas()
         );
 
-        Moto moto= (Moto) motoFactory.criarVeiculo();
+        Moto moto = motoFactory.criarVeiculo();
         motoRepository.save(moto);
 
         return new MotoDetalhadaDTO(moto);

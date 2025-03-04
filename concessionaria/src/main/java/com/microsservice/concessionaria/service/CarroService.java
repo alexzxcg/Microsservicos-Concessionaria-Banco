@@ -29,7 +29,7 @@ public class CarroService {
                 carroDTO.motor()
         );
 
-        Carro carro = (Carro) carroFactory.criarVeiculo();
+        Carro carro = carroFactory.criarVeiculo();
         carroRepository.save(carro);
 
         return new CarroDetalhadoDTO(carro);
