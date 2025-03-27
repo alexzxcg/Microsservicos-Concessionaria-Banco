@@ -5,6 +5,7 @@ import com.microsservice.concessionaria.domain.caminhao.CaminhaoDTO;
 import com.microsservice.concessionaria.domain.caminhao.CaminhaoDetalhadoDTO;
 import com.microsservice.concessionaria.domain.caminhao.CaminhaoFactory;
 import com.microsservice.concessionaria.domain.veiculo.StatusVeiculo;
+import com.microsservice.concessionaria.exception.veiculo.VeiculoNaoEncontradoException;
 import com.microsservice.concessionaria.repository.CaminhaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,6 @@ public class CaminhaoService {
 
     public CaminhaoDetalhadoDTO buscarCaminhaoPorId(Long id) {
         return caminhaoRepository.findById(id).map(CaminhaoDetalhadoDTO::new)
-                .orElseThrow(() -> new RuntimeException("Caminhão não encontrado"));
+                .orElseThrow(() -> new VeiculoNaoEncontradoException(id));
     }
 }

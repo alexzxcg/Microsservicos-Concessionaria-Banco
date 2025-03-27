@@ -3,6 +3,8 @@ package com.microsservice.concessionaria.service;
 import com.microsservice.concessionaria.domain.funcionario.Funcionario;
 import com.microsservice.concessionaria.domain.funcionario.FuncionarioDTO;
 import com.microsservice.concessionaria.domain.funcionario.FuncionarioDetalhadoDTO;
+import com.microsservice.concessionaria.exception.funcionario.FuncionarioException;
+import com.microsservice.concessionaria.exception.funcionario.FuncionarioNaoEncontradoException;
 import com.microsservice.concessionaria.repository.FuncionarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ public class FuncionarioService {
         // Salva e transforma o Funcionario em FuncionarioDetalhadoDTO usando lambda
         return Optional.of(funcionarioRepository.save(funcionario))
                 .map(FuncionarioDetalhadoDTO::new)
-                .orElseThrow(() -> new RuntimeException("Erro ao criar Funcionario")); // Lança exceção se não for encontrado
+                .orElseThrow(() -> new FuncionarioException("Erro ao criar Funcionario")); // Lança exceção se não for encontrado
     }
 
     public List<FuncionarioDetalhadoDTO> listarFuncionarios() {
@@ -39,6 +41,6 @@ public class FuncionarioService {
     public FuncionarioDetalhadoDTO buscarFuncionarioPorId(Long id) {
         return funcionarioRepository.findById(id)
                 .map(FuncionarioDetalhadoDTO::new)
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado com ID: " + id));  // Lança exceção se não encontrado
+                .orElseThrow(() -> new FuncionarioNaoEncontradoException(id));  // Lança exceção se não encontrado
     }
 }

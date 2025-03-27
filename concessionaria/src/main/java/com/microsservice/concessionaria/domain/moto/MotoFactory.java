@@ -2,6 +2,7 @@ package com.microsservice.concessionaria.domain.moto;
 
 import com.microsservice.concessionaria.domain.veiculo.Categoria;
 import com.microsservice.concessionaria.domain.veiculo.VeiculoFactory;
+import com.microsservice.concessionaria.exception.veiculo.VeiculoException;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -29,6 +30,6 @@ public class MotoFactory extends VeiculoFactory {
                 : (cilindrada >= 300 && cilindrada <= 600) ? Categoria.MEDIA_CILINDRADA
                 : (cilindrada > 600) ? Categoria.ALTA_CILINDRADA
                 : null
-        ).orElseThrow(() -> new IllegalArgumentException("Cilindrada da moto não é compatível com nenhuma categoria."));
+        ).orElseThrow(() -> new VeiculoException("Cilindrada não é compativel com nenhuma categoria deve estar entre 50 a 2000"));
     }
 }

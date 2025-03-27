@@ -2,6 +2,7 @@ package com.microsservice.concessionaria.domain.carro;
 
 import com.microsservice.concessionaria.domain.veiculo.Categoria;
 import com.microsservice.concessionaria.domain.veiculo.VeiculoFactory;
+import com.microsservice.concessionaria.exception.veiculo.VeiculoException;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -38,6 +39,6 @@ public class CarroFactory extends VeiculoFactory {
                 .filter(c -> c.getKey().contains(motorNormalizado))
                 .map(Map.Entry::getValue)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Motor do carro não é compatível com nenhuma categoria: " + motor));
+                .orElseThrow(() -> new VeiculoException("Motor não é compativel com nenhuma categoria." + motor));
     }
 }

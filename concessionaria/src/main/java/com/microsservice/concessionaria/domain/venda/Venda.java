@@ -3,6 +3,7 @@ package com.microsservice.concessionaria.domain.venda;
 import com.microsservice.concessionaria.domain.cliente.Cliente;
 import com.microsservice.concessionaria.domain.funcionario.Funcionario;
 import com.microsservice.concessionaria.domain.veiculo.Veiculo;
+import com.microsservice.concessionaria.exception.validacao.ValidacaoException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -46,8 +47,13 @@ public class Venda {
         this.cliente = cliente;
         this.veiculo = veiculo;
         this.valorVenda = veiculo.getPreco(); // O preço do veículo define o valor da venda
-        this.formaDePagamento = dto.formaDePagamento();
-        setNumeroParcelas(dto.numeroParcelas()); // Valida antes de atribuir
+        this.formaDePagamento = FormaDePagamento.valueOf(dto.formaDePagamento().toUpperCase());
+
+        // Verifica se a forma de pagamento exige parcelamento
+        this.numeroParcelas = this.formaDePagamento.exigeParcelamento()
+                ? dto.numeroParcelas()
+                : null; // Caso pagamento não exige parcela, define como null.
+
         this.dataDaVenda = LocalDateTime.now(); // Atribui automaticamente a data e hora da venda
     }
 
@@ -98,13 +104,6 @@ public class Venda {
 
     public Integer getNumeroParcelas() {
         return numeroParcelas;
-    }
-
-    public void setNumeroParcelas(Integer numeroParcelas) {
-        if (this.formaDePagamento.exigeParcelamento() && (numeroParcelas == null || numeroParcelas <= 0)) {
-            throw new IllegalArgumentException("Número de parcelas deve ser informado para financiamento e deve ser maior que zero.");
-        }
-        this.numeroParcelas = numeroParcelas;
     }
 
     public LocalDateTime getDataDaVenda() {

@@ -5,6 +5,8 @@ import com.microsservice.concessionaria.domain.cliente.ClienteDTO;
 import com.microsservice.concessionaria.domain.cliente.ClienteDetalhadoDTO;
 import com.microsservice.concessionaria.domain.funcionario.Funcionario;
 import com.microsservice.concessionaria.domain.funcionario.FuncionarioDetalhadoDTO;
+import com.microsservice.concessionaria.exception.cliente.ClienteException;
+import com.microsservice.concessionaria.exception.cliente.ClienteNaoEncontradoException;
 import com.microsservice.concessionaria.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class ClienteService {
         // Salva e transforma o Cliente em ClienteoDetalhadoDTO usando lambda
         return Optional.of(clienteRepository.save(cliente))
                 .map(ClienteDetalhadoDTO::new)
-                .orElseThrow(() -> new RuntimeException("Erro ao criar Funcionario")); // Lança exceção se não for encontrado
+                .orElseThrow(() -> new ClienteException("Erro ao criar Cliente")); // Lança exceção se não for encontrado
     }
 
     public List<ClienteDetalhadoDTO> listarClientes() {
@@ -41,6 +43,6 @@ public class ClienteService {
     public ClienteDetalhadoDTO buscarClientePorId(Long id) {
         return clienteRepository.findById(id)
                 .map(ClienteDetalhadoDTO::new)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com ID: " + id));
+                .orElseThrow(() -> new ClienteNaoEncontradoException(id));
     }
 }

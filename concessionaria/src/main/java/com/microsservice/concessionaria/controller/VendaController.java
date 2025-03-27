@@ -20,9 +20,10 @@ public class VendaController {
     private VendaService vendaService;
 
     @PostMapping
-    public ResponseEntity<VendaDetalhadaDTO> criarCarro(@Valid @RequestBody VendaDTO dto, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<VendaDetalhadaDTO> criarVenda(@Valid @RequestBody VendaDTO dto, UriComponentsBuilder uriBuilder) {
         VendaDetalhadaDTO vendaDevolvida = vendaService.criarVenda(dto);
-        var uri = uriBuilder.path("/carros/{id}").buildAndExpand(vendaDevolvida.id()).toUri();
+        var uri = uriBuilder.path("/vendas/{id}").buildAndExpand(vendaDevolvida.id()).toUri();
         return ResponseEntity.created(uri).body(vendaDevolvida);
     }
 }
+
