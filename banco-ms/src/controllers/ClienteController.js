@@ -8,7 +8,7 @@ class ClienteController extends Controller {
         super(clienteServices);
     }
 
-    async buscaContas(req, res) {
+    async buscaContasDoCliente(req, res) {
         const { clienteId } = req.params;
         try {
             const listaContas = await clienteServices.buscaContas(Number(clienteId));
@@ -18,7 +18,7 @@ class ClienteController extends Controller {
         }
     }
 
-    async buscaContaPorId(req, res) {
+    async buscaContaPorIdDoCliente(req, res) {
         const { clienteId, contaId } = req.params;
     
         try {
