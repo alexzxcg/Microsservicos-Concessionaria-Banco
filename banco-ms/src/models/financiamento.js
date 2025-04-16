@@ -22,6 +22,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }, 
 
+    valorParcela: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0.00
+    },
+
     dataTerminoEstimada: {
       type: DataTypes.DATE,
       allowNull: false
