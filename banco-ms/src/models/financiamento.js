@@ -1,50 +1,65 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Financiamento extends Model {
     static associate(models) {
       this.belongsTo(models.Conta, {
-        foreignKey: 'contaId',
+        foreignKey: 'conta_id',
         as: 'conta'
       });
     }
   }
+
   Financiamento.init({
-    valorTotalFinanciamento: {
+    valor_total_financiamento: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
 
-    numeroDeParcelas:{
+    numero_de_parcelas: {
       type: DataTypes.INTEGER,
       allowNull: false
-    }, 
+    },
 
-    valorParcela: {
+    valor_parcela: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       defaultValue: 0.00
     },
 
-    dataTerminoEstimada: {
+    data_termino_estimada: {
       type: DataTypes.DATE,
       allowNull: false
     },
+
     status: {
       type: DataTypes.ENUM('EM_ANALISE', 'APROVADO', 'REJEITADO', 'QUITADO'),
-      defaultValue: 'EM_ANALISE',
-      allowNull: false
+      allowNull: false,
+      defaultValue: 'EM_ANALISE'
     },
-    contaId: {
+
+    tipo_financiamento: {
+      type: DataTypes.ENUM('TOTAL', 'PARCIAL'),
+      allowNull: false,
+      defaultValue: 'TOTAL'
+    },
+
+    valor_entrada: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true
+    },
+
+    conta_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
   }, {
     sequelize,
     modelName: 'Financiamento',
-    tableName: 'financiamentos'
+    tableName: 'financiamentos',
+    underscored: true
   });
+
   return Financiamento;
 };

@@ -11,30 +11,33 @@ class FinanciamentoServices extends Services {
     async buscaTodosOsRegistros(clienteId, contaId) {
         try {
             // Verifica se a conta pertence ao cliente
-            const conta = await this.clienteServices.buscaContaPorId(clienteId, contaId);
-
-            if (conta.status !== 200) {
-                return conta; // retorna erro encontrado no serviço de cliente
+            const contaResponse = await this.clienteServices.buscaContaPorId(clienteId, contaId);
+    
+            if (contaResponse.status !== 200) {
+                return contaResponse;
             }
-
-            // Busca os financiamentos vinculados à conta
-            const financiamentos = await dataSource.Conta.findByPk(contaId, {
+    
+            const conta = contaResponse.data;
+    
+            // Recarrega a conta com os financiamentos associados
+            const contaComFinanciamentos = await conta.reload({
                 include: {
                     model: dataSource.Financiamento,
                     as: 'financiamentos'
                 }
             });
-
-            if (!financiamentos) {
+    
+            if (!contaComFinanciamentos.financiamentos || contaComFinanciamentos.financiamentos.length === 0) {
                 return { status: 404, data: { mensagem: 'Nenhum financiamento encontrado para esta conta' } };
             }
-
-            return { status: 200, data: financiamentos.financiamentos };
+    
+            return { status: 200, data: contaComFinanciamentos.financiamentos };
         } catch (erro) {
-            console.error(erro);
+            console.error('Erro ao buscar financiamentos:', erro);
             return { status: 500, data: { mensagem: 'Erro ao buscar financiamentos', erro } };
         }
     }
+    
 }
 
 module.exports = FinanciamentoServices;
