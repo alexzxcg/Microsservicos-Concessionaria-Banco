@@ -17,5 +17,6 @@ router.get('/clientes/:clienteId/contas/:contaId', (req, res) => clienteControll
 router.post('/clientes/:clienteId/contas', (req, res) => contaController.criaRegistro(req, res));
 router.put('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.atualizaContaDeCliente(req, res));
 router.delete('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.excluiContaDeCliente(req, res));
+router.get('/clientes/:clienteId/contas/:contaId/financiamentos', (req, res) => financiamentoController.buscaTodos(req, res));
 
 module.exports = router;
