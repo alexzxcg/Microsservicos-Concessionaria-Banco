@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
 
     data_termino_estimada: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
 
     status: {
@@ -58,7 +58,6 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Financiamento',
     tableName: 'financiamentos',
-    underscored: true
   });
 
   return Financiamento;

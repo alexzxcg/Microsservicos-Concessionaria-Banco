@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       this.hasMany(models.Financiamento, {
-        foreignKey: 'contaId',
+        foreignKey: 'conta_id',
         as: 'financiamentos'
       });
     }
