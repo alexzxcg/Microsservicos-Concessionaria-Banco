@@ -2,37 +2,33 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('contas', {
+    await queryInterface.createTable('financiamentos', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      numero: {
-        type: Sequelize.STRING
-      },
-      agencia: {
-        type: Sequelize.STRING
-      },
-      tipo: {
-        type: Sequelize.ENUM('corrente', 'poupanca', 'salario'),
+      valorTotalFinanciamento: {
+        type: Sequelize.DECIMAL(10, 2),
         allowNull: false
       },
-      saldo: {
-        type: Sequelize.DECIMAL
-      },
-      ativa: {
-        type: Sequelize.BOOLEAN
-      },
-      clienteId: {
+      numeroDeParcelas: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'clientes',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
+        allowNull: false
+      },
+      dataTerminoEstimada: {
+        type: Sequelize.DATE,
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM('EM_ANALISE', 'APROVADO', 'REJEITADO', 'QUITADO'),
+        defaultValue: 'EM_ANALISE',
+        allowNull: false
+      },
+      contaId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -45,6 +41,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('contas');
+    await queryInterface.dropTable('financiamentos');
   }
 };

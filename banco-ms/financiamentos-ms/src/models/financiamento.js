@@ -2,14 +2,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Financiamento extends Model {
-    static associate(models) {
-      this.belongsTo(models.Conta, {
-        foreignKey: 'conta_id',
-        as: 'conta'
-      });
-    }
-  }
+  class Financiamento extends Model {}
 
   Financiamento.init({
     valor_total_financiamento: {
