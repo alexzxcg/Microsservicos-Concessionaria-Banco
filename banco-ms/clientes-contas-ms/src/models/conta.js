@@ -12,7 +12,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Conta.init({
-    numero: DataTypes.STRING,
+    numero:{
+      type:  DataTypes.STRING,
+      unique: true
+    },
     agencia: DataTypes.STRING,
     tipo: DataTypes.ENUM('corrente', 'poupanca', 'salario'),
     saldo: DataTypes.DECIMAL,

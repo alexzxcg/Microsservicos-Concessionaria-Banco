@@ -21,13 +21,11 @@ class FinanciamentoController extends Controller {
     }
 
     async criaRegistro(req, res) {
-        const { contaId } = req.params;
         const dadosDoFinanciamento = req.body;
 
         try {
             const novoFinanciamento = await financiamentoServices.criaRegistro({
-                ...dadosDoFinanciamento,
-                conta_id: Number(contaId)
+                ...dadosDoFinanciamento
             });
 
             return res.status(201).json(novoFinanciamento);

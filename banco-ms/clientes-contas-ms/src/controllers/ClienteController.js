@@ -1,6 +1,6 @@
 const Controller = require('./Controller.js');
 const ClienteServices = require('../services/ClienteServices');
-const ClienteDTO  = require('../dtos/clienteOutputDto/ClienteDTO.js');
+const ClienteDTO = require('../dtos/clienteOutputDto/ClienteDTO.js');
 
 const clienteServices = new ClienteServices();
 const yup = require('yup');
@@ -12,42 +12,70 @@ class ClienteController extends Controller {
     }
 
     async buscaContasDoCliente(req, res) {
-        const { clienteId } = req.params;
+        const { clienteId, cpf } = req.params;
+
         try {
-            const listaContas = await clienteServices.buscaContas(Number(clienteId));
-            return res.status(200).json(listaContas);
+            const resultado = clienteId
+                ? await clienteServices.buscaContas(Number(clienteId))
+                : await clienteServices.buscaContaCorrentePorCpf(cpf);
+
+            return res.status(200).json(resultado);
         } catch (erro) {
-            
+            return res.status(404).json({ mensagem: erro.message });
         }
     }
 
     async buscaContaPorIdDoCliente(req, res) {
         const { clienteId, contaId } = req.params;
-    
+
         try {
             const resultado = await clienteServices.buscaContaPorId(
                 Number(clienteId),
                 Number(contaId)
             );
-    
             return res.status(resultado.status).json(resultado.data);
         } catch (erro) {
-            console.error('Erro ao buscar conta do cliente:', erro);
-            return res.status(500).json({ mensagem: 'Erro interno ao buscar conta' });
+            return res.status(500).json({ mensagem: 'Erro interno ao buscar financiamentos da conta' });
+        }
+    }
+
+    async buscaContaFinanciamentos(req, res) {
+        const { clienteId, contaId } = req.params;
+
+        try {
+            return res.status(200).json(await clienteServices.buscaContaFinanciamentos(
+                Number(clienteId),
+                Number(contaId)
+            ));
+        } catch (erro) {
+            return res.status(500).json({ mensagem: 'Erro interno ao buscar financiamentos da conta' });
+        }
+    }
+
+    async buscaContaFinanciamentoPorId(req, res) {
+        const { clienteId, contaId, financiamentoId } = req.params;
+
+        try {
+            return res.status(200).json(await clienteServices.buscaContaFinanciamentoPorId(
+                Number(clienteId),
+                Number(contaId),
+                Number(financiamentoId)
+            ));
+        } catch (erro) {
+            return res.status(500).json({ mensagem: 'Erro interno ao buscar financiamento por id' });
         }
     }
 
     async criaRegistro(req, res) {
         const dadosParaCriacao = req.body;
         const clienteDTO = new ClienteDTO(dadosParaCriacao);
-    
+
         try {
             return res.status(201).json(await clienteServices.criaRegistro(clienteDTO));
         } catch (erro) {
             if (erro instanceof yup.ValidationError) {
                 return res.status(400).json({ mensagens: erro.errors });
             }
-    
             return res.status(500).json({ mensagem: 'Erro interno ao criar cliente', erro: erro.message });
         }
     }
@@ -65,23 +93,21 @@ class ClienteController extends Controller {
 
             return res.status(resultado.status).json(resultado.data);
         } catch (erro) {
-            console.error('Erro ao atualizar conta:', erro);
             return res.status(500).json({ mensagem: 'Erro interno ao atualizar conta' });
         }
     }
 
     async excluiContaDeCliente(req, res) {
         const { clienteId, contaId } = req.params;
-    
+
         try {
             const resultado = await clienteServices.desativaConta(
                 Number(clienteId),
                 Number(contaId)
             );
-    
+
             return res.status(resultado.status).json(resultado.data);
         } catch (erro) {
-            console.error('Erro ao desativar conta:', erro);
             return res.status(500).json({ mensagem: 'Erro interno ao desativar conta' });
         }
     }
