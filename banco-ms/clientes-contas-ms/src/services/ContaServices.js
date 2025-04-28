@@ -34,7 +34,7 @@ class ContaServices extends Services {
         });
     
         if (!conta || !conta.cliente) {
-            return null; // deixe o controller tratar
+            return null; 
         }
     
         return {

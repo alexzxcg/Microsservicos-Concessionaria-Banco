@@ -1,9 +1,9 @@
-const { clienteInputDto } = require('../../dtos/clienteInputDto/clienteInputDto');
+const { clienteValidacaoDTO } = require('../../dtos/clienteValidacaoDto/clienteValidacaoDTO.js');
 const yup = require('yup');
 
 const validarCliente = async (req, res, next) => {
   try {
-    await clienteInputDto.validate(req.body, { abortEarly: false });
+    await clienteValidacaoDTO.validate(req.body, { abortEarly: false });
     next();
   } catch (erro) {
     if (erro instanceof yup.ValidationError) {

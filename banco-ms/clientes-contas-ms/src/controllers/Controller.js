@@ -1,16 +1,26 @@
+const yup = require('yup');
+
 class Controller {
-    constructor(entidadeService) {
+    constructor(entidadeService, inputDTO, outputDTO, updateDTO) {
         this.entidadeService = entidadeService;
+        this.inputDTO = inputDTO;
+        this.outputDTO = outputDTO;
+        this.updateDTO = updateDTO;
     }
 
     async buscaTodos(req, res) {
         try {
-            console.log("Buscando todos os registros...");
-            const listaDeResgistro = await this.entidadeService.buscaTodosOsRegistros();
-            console.log("Lista de registros:", listaDeResgistro);
-            return res.status(200).json(listaDeResgistro);
+            const listaDeRegistro = await this.entidadeService.buscaTodosOsRegistros();
+            
+            if (!listaDeRegistro || listaDeRegistro.length === 0) {
+                return res.status(404).json({ mensagem: 'Nenhum registro encontrado.' });
+            }
+
+            // Mapear para DTO de saída
+            const listaDTO = listaDeRegistro.map(registro => new this.outputDTO(registro));
+            
+            return res.status(200).json(listaDTO);
         } catch (erro) {
-            console.error("Erro ao buscar todos os registros:", erro);
             return res.status(500).json({ error: "Erro ao buscar os registros." });
         }
     }
@@ -18,15 +28,13 @@ class Controller {
     async buscaPorId(req, res) {
         const { id } = req.params;
         try {
-            console.log(`Buscando registro com id: ${id}`);
             const registroObtido = await this.entidadeService.buscaUmPorId(Number(id));
-            console.log("Registro obtido:", registroObtido);
             if (!registroObtido) {
-                return res.status(404).json({ mensagem: 'Cliente não encontrado' });
+                return res.status(404).json({ mensagem: 'Registro não encontrado' });
             }
-            return res.status(200).json(registroObtido);
+            const registroDTO = new this.outputDTO(registroObtido);
+            return res.status(200).json(registroDTO);
         } catch (erro) {
-            console.error("Erro ao buscar o registro por id:", erro);
             return res.status(500).json({ error: "Erro ao buscar o registro." });
         }
     }
@@ -34,10 +42,15 @@ class Controller {
     async criaRegistro(req, res) {
         const dadosParaCriacao = req.body;
         try {
-            const novoRegistroCriado = await this.entidadeService.criaRegistro(dadosParaCriacao);
-            return res.status(201).json(novoRegistroCriado);
+            const dtoParaCriacao = new this.inputDTO(dadosParaCriacao);
+            const novoRegistroCriado = await this.entidadeService.criaRegistro(dtoParaCriacao);
+            const respostaDTO = new this.outputDTO(novoRegistroCriado);
+            return res.status(201).json(respostaDTO);
         } catch (erro) {
-            
+            if (erro instanceof yup.ValidationError) {
+                return res.status(400).json({ mensagens: erro.errors });
+            }
+            return res.status(500).json({ mensagem: 'Erro interno ao criar o registro.', erro: erro.message });
         }
     }
 
@@ -45,13 +58,17 @@ class Controller {
         const { id } = req.params;
         const dadosAtualizados = req.body;
         try {
-            const foiAtualizado = await this.entidadeService.atualizaRegistro(dadosAtualizados, Number(id));
-            if (!foiAtualizado) {
-                return res.status(400).json({ mensagem: 'registro não foi atualizado' });
+            const dtoParaAtualizacao = new this.updateDTO(dadosAtualizados);
+            const registroAtualizado = await this.entidadeService.atualizaRegistro(dtoParaAtualizacao, Number(id));
+            
+            if (!registroAtualizado) {
+                return res.status(400).json({ mensagem: 'Registro não foi atualizado' });
             }
-            return res.status(200).json({ mensagem: 'Atualizado com sucesso' });
+
+            const dtoDeResposta = new this.outputDTO(registroAtualizado);
+            return res.status(200).json(dtoDeResposta);
         } catch (erro) {
-            //erro
+            return res.status(500).json({ error: "Erro ao atualizar o registro." });
         }
     }
 
@@ -59,9 +76,9 @@ class Controller {
         const { id } = req.params;
         try {
             await this.entidadeService.excluiRegistro(Number(id));
-            return res.status(200).json({ mensagem: `id ${id} deletado` });
-        } catch (error) {
-            return res.status(500).json(error.message);
+            return res.status(200).json({ mensagem: `ID ${id} deletado` });
+        } catch (erro) {
+            return res.status(500).json({ error: erro.message });
         }
     }
 }

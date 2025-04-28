@@ -1,14 +1,14 @@
 const Controller = require('./Controller.js');
 const ClienteServices = require('../services/ClienteServices');
-const ClienteDTO = require('../dtos/clienteOutputDto/ClienteDTO.js');
+const ClienteOutputDTO = require('../dtos/cliente-dto/ClienteOutputDTO.js');
+const ClienteInputDTO = require('../dtos/cliente-dto/ClienteInputDTO.js');
+const ClienteUpdateDTO = require('../dtos/cliente-dto/ClienteUpdateDTO.js')
 
 const clienteServices = new ClienteServices();
-const yup = require('yup');
-
 
 class ClienteController extends Controller {
     constructor() {
-        super(clienteServices);
+        super(clienteServices, ClienteInputDTO, ClienteOutputDTO, ClienteUpdateDTO);
     }
 
     async buscaContasDoCliente(req, res) {
@@ -63,20 +63,6 @@ class ClienteController extends Controller {
             ));
         } catch (erro) {
             return res.status(500).json({ mensagem: 'Erro interno ao buscar financiamento por id' });
-        }
-    }
-
-    async criaRegistro(req, res) {
-        const dadosParaCriacao = req.body;
-        const clienteDTO = new ClienteDTO(dadosParaCriacao);
-
-        try {
-            return res.status(201).json(await clienteServices.criaRegistro(clienteDTO));
-        } catch (erro) {
-            if (erro instanceof yup.ValidationError) {
-                return res.status(400).json({ mensagens: erro.errors });
-            }
-            return res.status(500).json({ mensagem: 'Erro interno ao criar cliente', erro: erro.message });
         }
     }
 

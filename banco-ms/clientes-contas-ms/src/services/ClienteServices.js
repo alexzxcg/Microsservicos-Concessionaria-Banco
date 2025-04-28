@@ -1,5 +1,4 @@
 const Services = require('./Services.js');
-const ClienteDTO = require('../dtos/clienteOutputDto/ClienteDTO.js');
 const axios = require('axios');
 
 class ClienteServices extends Services {
@@ -101,18 +100,6 @@ class ClienteServices extends Services {
     
             console.error('Erro ao buscar financiamento por id:', erro.message || erro);
             throw new Error('Erro ao buscar financiamento por id');
-        }
-    }
-
-    async criaRegistro(clienteDTOReq) {
-        try {
-            const clienteCriado = await super.criaRegistro(clienteDTOReq);
-
-            const clienteDTO = new ClienteDTO(clienteCriado);
-
-            return clienteDTO;
-        } catch (erro) {
-            throw new Error(`Erro ao criar cliente: ${erro.message}`);
         }
     }
 

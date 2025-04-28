@@ -18,10 +18,16 @@ class Services {
     }
 
     async atualizaRegistro(dadosAtualizados, id) {
-        const listadeRegistrosAtualizados = await this.model.update(dadosAtualizados, {
+        const [quantidadeAtualizada] = await this.model.update(dadosAtualizados, {
             where: { id: id }
         });
-        return listadeRegistrosAtualizados[0] !== 0;
+    
+        if (quantidadeAtualizada === 0) {
+            return null;
+        }
+    
+        const registroAtualizado = await this.model.findByPk(id);
+        return registroAtualizado;
     }
 
     async excluiRegistro(id) {

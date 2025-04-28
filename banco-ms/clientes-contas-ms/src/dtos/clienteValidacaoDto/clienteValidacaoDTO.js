@@ -1,6 +1,6 @@
 const yup = require('yup');
 
-const clienteInputDto = yup.object({
+const clienteValidacaoDTO = yup.object({
   nome: yup.string().min(3, 'O nome deve ter no mínimo 3 caracteres').required('O nome é obrigatório'),
   email: yup.string().email('O email deve ser válido').required('O email é obrigatório'),
   cpf: yup.string().length(11, 'O CPF deve ter 11 caracteres').required('O CPF é obrigatório'),
@@ -15,4 +15,4 @@ const clienteInputDto = yup.object({
   cep: yup.string().required('O CEP é obrigatório'), // Endereço obrigatório
 });
 
-module.exports = { clienteInputDto };
+module.exports = { clienteValidacaoDTO };
