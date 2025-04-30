@@ -53,7 +53,7 @@ class ContaServices extends Services {
         conta.saldo = novoSaldo;
         await conta.save();
     
-        return { mensagem: 'Saldo atualizado com sucesso', saldoAtual: conta.saldo };
+        return { mensagem: 'Saldo atualizado com sucesso' };
     }
 }
 

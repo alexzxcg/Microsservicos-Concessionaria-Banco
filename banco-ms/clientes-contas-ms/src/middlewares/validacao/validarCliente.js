@@ -1,4 +1,4 @@
-const { clienteValidacaoDTO } = require('../../dtos/clienteValidacaoDto/clienteValidacaoDTO.js');
+const { clienteValidacaoDTO } = require('../../dtos/cliente-validacao-dto/clienteValidacaoDTO.js');
 const yup = require('yup');
 
 const validarCliente = async (req, res, next) => {

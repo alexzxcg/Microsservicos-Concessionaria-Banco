@@ -1,7 +1,8 @@
 const { Router } = require('express');
 const ClienteController = require('../controllers/ClienteController.js');
 const ContaController = require('../controllers/ContaController.js');
-const validarCliente = require('../middlewares/validacaoCliente/validarCliente.js');
+const validarCliente = require('../middlewares/validacao/validarCliente.js');
+const validarConta = require('../middlewares/validacao/validarConta.js');
 
 const clienteController = new ClienteController();
 const contaController = new ContaController();
@@ -20,7 +21,7 @@ router.get('/clientes/contas/:cpf', (req, res) => clienteController.buscaContasD
 router.get('/clientes/:clienteId/contas/:contaId/financiamentos', (req, res) => clienteController.buscaContaFinanciamentos(req, res));
 router.get('/clientes/:clienteId/contas/:contaId/financiamentos/:financiamentoId', (req, res) => clienteController.buscaContaFinanciamentoPorId(req, res));
 
-router.post('/clientes/:clienteId/contas', (req, res) => contaController.criaRegistro(req, res));
+router.post('/clientes/:clienteId/contas', validarConta, (req, res) => contaController.criaRegistro(req, res));
 router.put('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.atualizaContaDeCliente(req, res));
 router.delete('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.excluiContaDeCliente(req, res));
 

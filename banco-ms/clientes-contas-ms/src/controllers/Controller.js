@@ -16,7 +16,6 @@ class Controller {
                 return res.status(404).json({ mensagem: 'Nenhum registro encontrado.' });
             }
 
-            // Mapear para DTO de saída
             const listaDTO = listaDeRegistro.map(registro => new this.outputDTO(registro));
             
             return res.status(200).json(listaDTO);

@@ -18,8 +18,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     agencia: DataTypes.STRING,
     tipo: DataTypes.ENUM('corrente', 'poupanca', 'salario'),
-    saldo: DataTypes.DECIMAL,
-    ativa: DataTypes.BOOLEAN,
+    saldo: {
+      type: DataTypes.DECIMAL,
+      defaultValue: 0.00
+    },
+    ativa: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
     clienteId: DataTypes.INTEGER
   }, {
     sequelize,
