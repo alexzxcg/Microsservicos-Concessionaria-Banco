@@ -10,7 +10,7 @@ const contaServices = new ContaServices();
 
 class ContaController extends Controller {
     constructor() {
-        super(contaServices);
+        super(contaServices, ContaInputDTO, ContaOutputDTO);
     }
 
     async criaRegistro(req, res) {
@@ -65,7 +65,7 @@ class ContaController extends Controller {
     async alterarSaldo(req, res) {
         const { contaId } = req.params;
         const { novoSaldo } = req.body;
-        saldo = ContaSaldoDTO(novoSaldo);
+        const saldo = new ContaSaldoDTO(novoSaldo);
       
         try {
           const resultado = await contaServices.alterarSaldo(contaId, saldo);

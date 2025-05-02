@@ -12,6 +12,10 @@ class Services {
     async buscaUmPorId(id) {
         return this.model.findByPk(id);
     }
+    
+    async buscaPorCampo(campo, valor) {
+        return this.model.findOne({ where: { [campo]: valor } });
+    }
 
     async criaRegistro(dadosDoRegistro) {
         return this.model.create(dadosDoRegistro);

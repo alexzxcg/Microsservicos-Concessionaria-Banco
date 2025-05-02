@@ -17,7 +17,6 @@ router.delete('/clientes/:id', (req, res) => clienteController.exclui(req, res))
 
 router.get('/clientes/:clienteId/contas', (req, res) => clienteController.buscaContasDoCliente(req, res));
 router.get('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.buscaContaPorIdDoCliente(req, res));
-router.get('/clientes/contas/:cpf', (req, res) => clienteController.buscaContasDoCliente(req, res));
 router.get('/clientes/:clienteId/contas/:contaId/financiamentos', (req, res) => clienteController.buscaContaFinanciamentos(req, res));
 router.get('/clientes/:clienteId/contas/:contaId/financiamentos/:financiamentoId', (req, res) => clienteController.buscaContaFinanciamentoPorId(req, res));
 

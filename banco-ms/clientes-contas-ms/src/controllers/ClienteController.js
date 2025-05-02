@@ -17,12 +17,10 @@ class ClienteController extends Controller {
     }
 
     async buscaContasDoCliente(req, res) {
-        const { clienteId, cpf } = req.params;
+        const { clienteId } = req.params;
 
         try {
-            const resultado = clienteId
-                ? await clienteServices.buscaContas(Number(clienteId))
-                : await clienteServices.buscaContaCorrentePorCpf(cpf);
+            const resultado = await clienteServices.buscaContas(Number(clienteId))
 
             const contasDTO = resultado.map(conta => new ContaOutputDTO(conta));
 

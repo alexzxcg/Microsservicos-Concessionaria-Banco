@@ -4,7 +4,7 @@ class ContaOutputDTO {
         this.numero = conta.numero;
         this.agencia = conta.agencia;
         this.tipo = conta.tipo;
-        this.saldo = parseFloat(conta.saldo);
+        this.saldo = conta.saldo;
         this.ativa = conta.ativa;
     }
 }
