@@ -1,5 +1,6 @@
 const Services = require('./Services.js');
 const axios = require('axios');
+const { AppError } = require('../middlewares/erro/errorHandler.js');
 
 class ClienteServices extends Services {
     constructor() {
@@ -9,7 +10,7 @@ class ClienteServices extends Services {
     async buscaContas(id) {
         const cliente = await super.buscaUmPorId(id);
         if (!cliente) {
-            throw new Error('Cliente não encontrado');
+            throw new AppError('Cliente não encontrado', 404);
         }
         const listaContas = await cliente.getContas();
         return listaContas;
@@ -18,92 +19,84 @@ class ClienteServices extends Services {
     async buscaContaCorrentePorCpf(cpf) {
         const cliente = await this.buscaPorCampo('cpf', cpf);
         if (!cliente) {
-            throw new Error('Cliente não encontrado');
+            throw new AppError('Cliente não encontrado', 404);
         }
 
         const contas = await cliente.getContas();
         const contaCorrente = contas.find(conta => conta.tipo === 'corrente');
 
         if (!contaCorrente) {
-            throw new Error('Conta corrente não encontrada');
+            throw new AppError('Conta corrente não encontrada', 404);
         }
 
-        return { id: contaCorrente.id };
+        return contaCorrente;
     }
 
     async buscaContaPorId(clienteId, contaId) {
-        try {
-            const conta = await this._verificaClienteEConta(clienteId, contaId);
-            return { status: 200, data: conta };
-        } catch (error) {
-            return { status: 404, data: { mensagem: error.message } };
-        }
+        const conta = await this._verificaClienteEConta(clienteId, contaId);
+        return conta;
     }
 
     async buscaContaFinanciamentos(clienteId, contaId) {
+        await this._verificaClienteEConta(clienteId, contaId);
+
         try {
-            await this._verificaClienteEConta(clienteId, contaId);
-
             const response = await axios.get(`http://localhost:3001/contas/${contaId}/financiamentos`);
-            const financiamentos = response.data;
-
-            return {
-                status: 200,
-                data: financiamentos.length > 0 ? financiamentos : []
-            };
+            return response.data || [];
         } catch (error) {
             console.error('Erro ao buscar financiamentos da conta:', error.message);
-            return { status: 500, data: { mensagem: 'Erro ao consultar financiamentos da conta' } };
+            throw new AppError('Erro ao consultar financiamentos da conta', 500);
         }
     }
 
     async buscaContaFinanciamentoPorId(clienteId, contaId, financiamentoId) {
+        await this._verificaClienteEConta(clienteId, contaId);
+
         try {
-            await this._verificaClienteEConta(clienteId, contaId);
-
-            const resposta = await axios.get(`http://localhost:3001/contas/${contaId}/financiamentos/${financiamentoId}`);
-            return resposta.data;
-        } catch (erro) {
-            if (erro.response && erro.response.status === 404) {
-                return { mensagem: 'Financiamento não encontrado para esta conta' };
+            const response = await axios.get(`http://localhost:3001/contas/${contaId}/financiamentos/${financiamentoId}`);
+            return response.data;
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                throw new AppError('Financiamento não encontrado para esta conta', 404);
             }
-
-            console.error('Erro ao buscar financiamento por id:', erro.message || erro);
-            throw new Error('Erro ao buscar financiamento por id');
+            
+            console.error('Erro ao buscar financiamento por id:', error.message);
+            throw new AppError('Erro ao buscar financiamento por id', 500);
         }
     }
 
     async atualizaContaDeCliente(clienteId, contaId, dadosAtualizados) {
+        const conta = await this._verificaClienteEConta(clienteId, contaId);
+        
         try {
-            const conta = await this._verificaClienteEConta(clienteId, contaId);
             const contaAtualizada = await conta.update(dadosAtualizados);
-            return { status: 200, data: { mensagem: 'Conta atualizada com sucesso', conta: contaAtualizada } };
+            return contaAtualizada;
         } catch (error) {
-            return { status: 404, data: { mensagem: error.message } };
+            throw new AppError('Erro ao atualizar conta', 500, [error.message]);
         }
     }
 
     async desativaConta(clienteId, contaId) {
+        const conta = await this._verificaClienteEConta(clienteId, contaId);
+
+        if (!conta.ativa) {
+            throw new AppError('Conta já está desativada', 400);
+        }
+
         try {
-            const conta = await this._verificaClienteEConta(clienteId, contaId);
-
-            if (!conta.ativa) {
-                return { status: 400, data: { mensagem: 'Conta já está desativada' } };
-            }
-
             await conta.update({ ativa: false });
-            return { status: 200, data: { mensagem: 'Conta desativada com sucesso' } };
+            return { mensagem: 'Conta desativada com sucesso' };
         } catch (error) {
-            return { status: 404, data: { mensagem: error.message } };
+            throw new AppError('Erro ao desativar conta', 500);
         }
     }
 
     async _verificaClienteEConta(clienteId, contaId) {
         const cliente = await this.model.findByPk(clienteId);
-        if (!cliente) throw new Error('Cliente não encontrado');
+        if (!cliente) throw new AppError('Cliente não encontrado', 404);
 
         const contas = await cliente.getContas({ where: { id: contaId } });
-        if (!contas || contas.length === 0) throw new Error('Conta não encontrada para este cliente');
+        if (!contas || contas.length === 0) throw new AppError('Conta não encontrada para este cliente', 404);
 
         return contas[0];
     }

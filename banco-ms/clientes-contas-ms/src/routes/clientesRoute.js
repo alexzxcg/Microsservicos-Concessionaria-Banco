@@ -3,25 +3,30 @@ const ClienteController = require('../controllers/ClienteController.js');
 const ContaController = require('../controllers/ContaController.js');
 const validarCliente = require('../middlewares/validacao/validarCliente.js');
 const validarConta = require('../middlewares/validacao/validarConta.js');
+const { errorHandler, notFoundHandler } = require('../middlewares/erro/errorHandler.js');
 
 const clienteController = new ClienteController();
 const contaController = new ContaController();
 
 const router = Router();
 
-router.get('/clientes', (req, res) => clienteController.buscaTodos(req, res));
-router.get('/clientes/:id', (req, res) => clienteController.buscaPorId(req, res));
-router.post('/clientes', validarCliente, (req, res) => clienteController.criaRegistro(req, res));
-router.put('/clientes/:id', (req, res) => clienteController.atualiza(req, res));
-router.delete('/clientes/:id', (req, res) => clienteController.exclui(req, res));
+router.get('/clientes', clienteController.buscaTodos);
+router.get('/clientes/:id', clienteController.buscaPorId);
+router.post('/clientes', validarCliente, clienteController.criaRegistro);
+router.put('/clientes/:id', clienteController.atualiza);
+router.delete('/clientes/:id', clienteController.exclui);
 
-router.get('/clientes/:clienteId/contas', (req, res) => clienteController.buscaContasDoCliente(req, res));
-router.get('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.buscaContaPorIdDoCliente(req, res));
-router.get('/clientes/:clienteId/contas/:contaId/financiamentos', (req, res) => clienteController.buscaContaFinanciamentos(req, res));
-router.get('/clientes/:clienteId/contas/:contaId/financiamentos/:financiamentoId', (req, res) => clienteController.buscaContaFinanciamentoPorId(req, res));
+router.get('/clientes/:clienteId/contas', clienteController.buscaContasDoCliente);
+router.get('/clientes/:clienteId/contas/:contaId', clienteController.buscaContaPorIdDoCliente);
+router.get('/clientes/:clienteId/contas/:contaId/financiamentos', clienteController.buscaContaFinanciamentos);
+router.get('/clientes/:clienteId/contas/:contaId/financiamentos/:financiamentoId', clienteController.buscaContaFinanciamentoPorId);
 
-router.post('/clientes/:clienteId/contas', validarConta, (req, res) => contaController.criaRegistro(req, res));
-router.put('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.atualizaContaDeCliente(req, res));
-router.delete('/clientes/:clienteId/contas/:contaId', (req, res) => clienteController.excluiContaDeCliente(req, res));
+router.post('/clientes/:clienteId/contas', validarConta, contaController.criaRegistro);
+router.put('/clientes/:clienteId/contas/:contaId', clienteController.atualizaContaDeCliente);
+router.delete('/clientes/:clienteId/contas/:contaId', clienteController.excluiContaDeCliente);
+
+router.use(notFoundHandler);
+
+router.use(errorHandler);
 
 module.exports = router;

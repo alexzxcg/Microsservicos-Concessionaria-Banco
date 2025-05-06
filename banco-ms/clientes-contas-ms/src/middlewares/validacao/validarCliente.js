@@ -1,5 +1,6 @@
 const { clienteValidacaoDTO } = require('../../dtos/cliente-validacao-dto/clienteValidacaoDTO.js');
 const yup = require('yup');
+const { AppError } = require('../erro/errorHandler');
 
 const validarCliente = async (req, res, next) => {
   try {
@@ -7,10 +8,10 @@ const validarCliente = async (req, res, next) => {
     next();
   } catch (erro) {
     if (erro instanceof yup.ValidationError) {
-      return res.status(400).json({ mensagens: erro.errors });
+      next(new AppError('Erro de validação', 400, erro.errors));
+      return;
     }
-
-    return res.status(500).json({ mensagem: 'Erro interno ao validar cliente', erro: erro.message });
+    next(new AppError('Erro interno ao validar cliente', 500));
   }
 };
 

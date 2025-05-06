@@ -5,6 +5,7 @@ const ContaInputDTO = require('../dtos/conta-dto/ContaInputDTO.js');
 const ContaDadosFinancaimentoDTO = require('../dtos/conta-dto/ContaDadosFinanciamentoDTO.js');
 const ContaSaldoDTO = require('../dtos/conta-dto/ContaSaldoDTO.js');
 const yup = require('yup');
+const { asyncHandler } = require('../middlewares/erro/errorHandler.js');
 
 const contaServices = new ContaServices();
 
@@ -13,7 +14,7 @@ class ContaController extends Controller {
         super(contaServices, ContaInputDTO, ContaOutputDTO);
     }
 
-    async criaRegistro(req, res) {
+    criaRegistro = asyncHandler(async (req, res) => {
         const { clienteId } = req.params;
         
         const dadosParaCriacao = {
@@ -29,51 +30,39 @@ class ContaController extends Controller {
             return res.status(201).json(contaOutputDTO);
         } catch (erro) {
             if (erro instanceof yup.ValidationError) {
-                return res.status(400).json({ mensagens: erro.errors });
+                throw new AppError('Erro de validação', 400, erro.errors);
             }
-            return res.status(500).json({ mensagem: 'Erro interno ao criar conta', erro: erro.message });
+            throw erro; 
         }
-    }
+    });
 
-    async buscarContaPorNumero(req, res) {
-        const numeroDaConta = req.params.numeroDaConta; ;
+    buscarContaPorNumero = asyncHandler(async (req, res) => {
+        const numeroDaConta = req.params.numeroDaConta;
+        const conta = await contaServices.buscarContaPorNumero(numeroDaConta);
+        const contaOutputDTO = new ContaOutputDTO(conta);
+        return res.status(200).json(contaOutputDTO);
+    });
     
-        try {
-            const conta = await contaServices.buscarContaPorNumero(numeroDaConta);
-            const contaOutputDTO = new ContaOutputDTO(conta);
-            if (!conta) {
-                return res.status(404).json({ mensagem: 'Conta não encontrada' });
-            }
-            return res.status(200).json(contaOutputDTO);
-        } catch (erro) {
-            return res.status(500).json({ mensagem: 'Erro ao buscar conta', erro: erro.message });
-        }
-    }
-    
-    async buscaDadosParaFinanciamento(req, res) {
+    buscaDadosParaFinanciamento = asyncHandler(async (req, res) => {
         const contaId = req.params.contaId;
-    
-        try {
-            dadosFinanciamento = await contaServices.buscaDadosParaFinanciamento(contaId);
-            contaDadosFinanciamentoDTO = ContaDadosFinancaimentoDTO(dadosParaFinanciamento);
-            return res.status(200).json(contaDadosFinanciamentoDTO);
-        } catch (erro) {
-            return res.status(500).json({ mensagem: 'Erro ao buscar conta', erro: erro.message });
+        const dadosFinanciamento = await contaServices.buscaDadosParaFinanciamento(contaId);
+        
+        if (!dadosFinanciamento) {
+            throw new AppError('Dados para financiamento não encontrados', 404);
         }
-    }
+        
+        const contaDadosFinanciamentoDTO = new ContaDadosFinancaimentoDTO(dadosFinanciamento);
+        return res.status(200).json(contaDadosFinanciamentoDTO);
+    });
 
-    async alterarSaldo(req, res) {
+    alterarSaldo = asyncHandler(async (req, res) => {
         const { contaId } = req.params;
         const { novoSaldo } = req.body;
         const saldo = new ContaSaldoDTO(novoSaldo);
-      
-        try {
-          const resultado = await contaServices.alterarSaldo(contaId, saldo);
-          return res.status(200).json(resultado);
-        } catch (erro) {
-          return res.status(500).json({ mensagem: 'Erro ao alterar saldo', erro: erro.message });
-        }
-    }
+        
+        const resultado = await contaServices.alterarSaldo(contaId, saldo);
+        return res.status(200).json(resultado);
+    });
 }
 
 module.exports = ContaController;

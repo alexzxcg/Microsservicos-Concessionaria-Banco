@@ -1,16 +1,17 @@
-const { contaValidacaoDTO }  = require('../../dtos/conta-validacao-dto/ContaValidacaoDTO');
+const { contaValidacaoDTO } = require('../../dtos/conta-validacao-dto/ContaValidacaoDTO');
 const yup = require('yup');
+const { AppError } = require('../erro/errorHandler'); // Ajuste o caminho conforme sua estrutura
 
 const validarConta = async (req, res, next) => {
   try {
-    await contaValidacaoDTO.validate(req.body, { abortEarly: false }); 
-    next(); 
+    await contaValidacaoDTO.validate(req.body, { abortEarly: false });
+    next();
   } catch (erro) {
     if (erro instanceof yup.ValidationError) {
-      return res.status(400).json({ mensagens: erro.errors });
+      next(new AppError('Erro de validação da conta', 400, erro.errors));
+      return;
     }
-
-    return res.status(500).json({ mensagem: 'Erro interno ao validar conta', erro: erro.message });
+    next(new AppError('Erro interno ao validar conta', 500));
   }
 };
 

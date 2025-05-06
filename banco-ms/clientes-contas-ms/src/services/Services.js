@@ -1,4 +1,5 @@
 const dataSource = require('../models');
+const { AppError } = require('../middlewares/erro/errorHandler.js');
 
 class Services {
     constructor(nomeDoModel) {
@@ -6,19 +7,35 @@ class Services {
     }
 
     async buscaTodosOsRegistros() {
-        return this.model.findAll();
+        const registros = await this.model.findAll();
+        if (!registros || registros.length === 0) {
+            throw new AppError('Nenhum registro encontrado', 404);
+        }
+        return registros;
     }
 
     async buscaUmPorId(id) {
-        return this.model.findByPk(id);
+        const registro = await this.model.findByPk(id);
+        if (!registro) {
+            throw new AppError('Registro não encontrado', 404);
+        }
+        return registro;
     }
     
     async buscaPorCampo(campo, valor) {
-        return this.model.findOne({ where: { [campo]: valor } });
+        const registro = await this.model.findOne({ where: { [campo]: valor } });
+        if (!registro) {
+            throw new AppError('Registro não encontrado', 404);
+        }
+        return registro;
     }
 
     async criaRegistro(dadosDoRegistro) {
-        return this.model.create(dadosDoRegistro);
+        try {
+            return await this.model.create(dadosDoRegistro);
+        } catch (error) {
+            throw new AppError('Erro ao criar registro', 400, [error.message]);
+        }
     }
 
     async atualizaRegistro(dadosAtualizados, id) {
@@ -27,15 +44,18 @@ class Services {
         });
     
         if (quantidadeAtualizada === 0) {
-            return null;
+            throw new AppError('Registro não encontrado para atualização', 404);
         }
     
-        const registroAtualizado = await this.model.findByPk(id);
-        return registroAtualizado;
+        return await this.model.findByPk(id);
     }
 
     async excluiRegistro(id) {
-        return this.model.destroy({ where: { id: id } });
+        const quantidadeExcluida = await this.model.destroy({ where: { id: id } });
+        if (quantidadeExcluida === 0) {
+            throw new AppError('Registro não encontrado para exclusão', 404);
+        }
+        return true;
     }
 }
 
