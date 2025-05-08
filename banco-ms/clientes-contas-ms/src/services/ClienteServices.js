@@ -34,8 +34,8 @@ class ClienteServices extends Services {
 
     async buscaContaPorId(clienteId, contaId) {
         const conta = await this._verificaClienteEConta(clienteId, contaId);
-        return conta;
-    }
+        return { data: conta, status: 200 };
+    }    
 
     async buscaContaFinanciamentos(clienteId, contaId) {
         await this._verificaClienteEConta(clienteId, contaId);
