@@ -5,13 +5,12 @@ const validarFinanciamento = require('../middlewares/validacao/validarFinanciame
 const router = Router();
 const financiamentoController = new FinanciamentoController();
 
-router.get('/contas/:contaId/financiamentos', (req, res) => financiamentoController.buscaTodos(req, res));
-router.post('/financiamentos/solicitar', validarFinanciamento, (req, res) => financiamentoController.criaRegistro(req, res));
-router.get('/contas/:contaId/financiamentos/:financiamentoId', (req, res) => financiamentoController.buscaPorId(req, res));
-router.patch('/financiamentos/:id/aprovar', (req, res) => financiamentoController.aprovaFinanciamento(req, res));
+router.get('/contas/:contaId/financiamentos', financiamentoController.buscaTodos);
+router.post('/financiamentos/solicitar', validarFinanciamento, financiamentoController.criaRegistro);
+router.get('/contas/:contaId/financiamentos/:financiamentoId', financiamentoController.buscaPorId);
+router.patch('/financiamentos/:id/aprovar', financiamentoController.aprovaFinanciamento);
 
-//Falta implementar
-router.put('/financiamentos/:id', (req, res) => financiamentoController.atualiza(req, res));
-router.delete('/financiamentos/:id', (req, res) => financiamentoController.exclui(req, res));
+//router.put('/financiamentos/:id', financiamentoController.atualiza);
+//router.delete('/financiamentos/:id', financiamentoController.exclui);
 
 module.exports = router;
