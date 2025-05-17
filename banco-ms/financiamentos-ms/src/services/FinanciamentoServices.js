@@ -1,9 +1,14 @@
 const GerenciaFinanciamentoServices = require('./GerenciaFinanciamentoServices.js');
 const dataSource = require('../models');
-const axios = require('axios');
 const { AppError } = require('../middlewares/erro/errorHandler.js');
+const {
+  buscaContaPorNumero,
+  consultaDadosContaParaAprovarFinanciamento,
+  atualizaSaldoDaConta
+} = require('../producers/contaProducer.js');
 
 class FinanciamentoServices {
+
   async buscaTodosOsRegistros(contaId) {
     const financiamentos = await dataSource.Financiamento.findAll({
       where: { conta_id: contaId },
@@ -21,12 +26,8 @@ class FinanciamentoServices {
     try {
       const { numeroConta, valorTotalFinanciamento, numeroDeParcelas, tipoFinanciamento, valorEntrada = 0.00 } = dados;
 
-      const resposta = await axios.get(`http://localhost:3000/contas/${numeroConta}`);
-      const conta = resposta.data;
-
-      if (!conta || !conta.id) {
-        throw new AppError('Conta corrente não encontrada', 404);
-      }
+      // chamada assíncrona via RabbitMQ
+      const conta = await buscaContaPorNumero(numeroConta);
 
       if (numeroDeParcelas > 60) {
         throw new AppError('O número máximo de parcelas permitido é 60', 400);
@@ -61,9 +62,6 @@ class FinanciamentoServices {
         status: 'EM_ANALISE'
       });
     } catch (erro) {
-      if (erro.response && erro.response.status === 404) {
-        throw new AppError('Conta não encontrada', 404);
-      }
       throw new AppError(erro.message || 'Erro ao criar financiamento', 400);
     }
   }
@@ -97,10 +95,10 @@ class FinanciamentoServices {
       const contaId = financiamento.conta_id;
       const tipoFinanciamento = financiamento.tipo_financiamento;
 
-      const { data: dados } = await axios.get(`http://localhost:3000/contas/${contaId}/dados-financiamento`);
+      const dadosConta = await consultaDadosContaParaAprovarFinanciamento(contaId);
 
-      const saldoConta = parseFloat(dados.saldo);
-      const rendaMensal = parseFloat(dados.renda_mensal);
+      const saldoConta = parseFloat(dadosConta.saldo);
+      const rendaMensal = parseFloat(dadosConta.rendaMensal);
       const valorEntrada = parseFloat(financiamento.valor_entrada);
       const valorParcela = parseFloat(financiamento.valor_parcela);
 
@@ -120,9 +118,7 @@ class FinanciamentoServices {
           financiamento.status = 'APROVADO';
           const novoSaldo = saldoConta - valorEntrada;
 
-          await axios.put(`http://localhost:3000/contas/${contaId}/alterar-saldo`, {
-            novoSaldo
-          });
+          await atualizaSaldoDaConta(contaId, novoSaldo);
         } else {
           financiamento.status = 'REJEITADO';
         }
@@ -137,7 +133,9 @@ class FinanciamentoServices {
       }
 
       if (aprovado) {
-        novaDataTermino = GerenciaFinanciamentoServices.calcularDataTermino(financiamento.numero_de_parcelas);
+        novaDataTermino = GerenciaFinanciamentoServices.calcularDataTermino(
+          financiamento.numero_de_parcelas
+        );
         financiamento.data_termino_estimada = novaDataTermino;
       }
 

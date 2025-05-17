@@ -1,6 +1,6 @@
 const Services = require('./Services.js');
-const axios = require('axios');
 const { AppError } = require('../middlewares/erro/errorHandler.js');
+const { buscarFinanciamentosPorConta, buscarFinanciamentoPorId } = require('../producers/buscaFinanciamentosProducer.js');
 
 class ClienteServices extends Services {
     constructor() {
@@ -35,17 +35,16 @@ class ClienteServices extends Services {
     async buscaContaPorId(clienteId, contaId) {
         const conta = await this._verificaClienteEConta(clienteId, contaId);
         return { data: conta, status: 200 };
-    }    
+    }
 
     async buscaContaFinanciamentos(clienteId, contaId) {
         await this._verificaClienteEConta(clienteId, contaId);
-
+        
         try {
-            const response = await axios.get(`http://localhost:3001/contas/${contaId}/financiamentos`);
-            return response.data || [];
+            const financiamentos = await buscarFinanciamentosPorConta(contaId);
+            return financiamentos;
         } catch (error) {
-            console.error('Erro ao buscar financiamentos da conta:', error.message);
-            throw new AppError('Erro ao consultar financiamentos da conta', 500);
+            throw new AppError(error.message, error.status || 500);
         }
     }
 
@@ -53,21 +52,19 @@ class ClienteServices extends Services {
         await this._verificaClienteEConta(clienteId, contaId);
 
         try {
-            const response = await axios.get(`http://localhost:3001/contas/${contaId}/financiamentos/${financiamentoId}`);
-            return response.data;
+            const financiamento = await buscarFinanciamentoPorId(contaId, financiamentoId);
+            return financiamento;
         } catch (error) {
-            if (error.response && error.response.status === 404) {
+            if (error.status === 404) {
                 throw new AppError('Financiamento não encontrado para esta conta', 404);
             }
-            
-            console.error('Erro ao buscar financiamento por id:', error.message);
             throw new AppError('Erro ao buscar financiamento por id', 500);
         }
     }
 
     async atualizaContaDeCliente(clienteId, contaId, dadosAtualizados) {
         const conta = await this._verificaClienteEConta(clienteId, contaId);
-        
+
         try {
             const contaAtualizada = await conta.update(dadosAtualizados);
             return contaAtualizada;
