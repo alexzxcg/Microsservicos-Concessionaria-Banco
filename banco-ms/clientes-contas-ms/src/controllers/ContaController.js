@@ -16,7 +16,7 @@ class ContaController extends Controller {
 
     criaRegistro = asyncHandler(async (req, res) => {
         const { clienteId } = req.params;
-        
+
         const dadosParaCriacao = {
             ...req.body,
             clienteId: Number(clienteId)
@@ -32,7 +32,7 @@ class ContaController extends Controller {
             if (erro instanceof yup.ValidationError) {
                 throw new AppError('Erro de validação', 400, erro.errors);
             }
-            throw erro; 
+            throw erro;
         }
     });
 
@@ -42,25 +42,25 @@ class ContaController extends Controller {
         const contaOutputDTO = new ContaOutputDTO(conta);
         return res.status(200).json(contaOutputDTO);
     });
-    
+
     buscaDadosParaFinanciamento = asyncHandler(async (req, res) => {
         const contaId = req.params.contaId;
         const dadosFinanciamento = await contaServices.buscaDadosParaFinanciamento(contaId);
-        
+
         if (!dadosFinanciamento) {
             throw new AppError('Dados para financiamento não encontrados', 404);
         }
-        
+
         const contaDadosFinanciamentoDTO = new ContaDadosFinancaimentoDTO(dadosFinanciamento);
         return res.status(200).json(contaDadosFinanciamentoDTO);
     });
 
     alterarSaldo = asyncHandler(async (req, res) => {
         const { contaId } = req.params;
-        const { novoSaldo } = req.body;
-        const saldo = new ContaSaldoDTO(novoSaldo);
-        
-        const resultado = await contaServices.alterarSaldo(contaId, saldo);
+        const { saldo } = req.body; 
+        const saldoDTO = new ContaSaldoDTO(saldo);
+        const resultado = await contaServices.alterarSaldo(contaId, saldoDTO.saldo);
+
         return res.status(200).json(resultado);
     });
 }

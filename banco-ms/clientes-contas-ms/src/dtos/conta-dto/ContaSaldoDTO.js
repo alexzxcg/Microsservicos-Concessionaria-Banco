@@ -1,6 +1,6 @@
 class ContaSaldoDTO {
     constructor(saldo) {
-        this.saldo = saldo;
+        this.saldo = parseFloat(saldo);
     }
 }
 
