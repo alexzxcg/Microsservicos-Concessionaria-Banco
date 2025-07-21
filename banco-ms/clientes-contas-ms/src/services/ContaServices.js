@@ -1,45 +1,24 @@
-const Services = require('./Services.js');
-const { Cliente } = require('../models');
-const Conta = require('../models').Conta;
+const Services = require('./Services');
+const ContaRepository = require('../repositories/ContaRepository');
+const ContaOutputDTO = require('../dtos/conta-dto/ContaOutputDTO');
 const { AppError } = require('../middlewares/erro/errorHandler.js');
 
 class ContaServices extends Services {
     constructor() {
-        super('Conta');
+        super(ContaRepository);
+        this.contaRepository = ContaRepository;
     }
 
-    async buscarContaPorNumero(numeroDaConta) {
-        const conta = await this.model.findOne({
-            where: {
-                numero: numeroDaConta,
-                ativa: true
-            },
-            attributes: ['id']
-        });
-
-        if (!conta) {
-            throw new AppError('Conta não encontrada', 404);
-        }
-
-        return conta;
+    async buscarContaPorNumero(numero) {
+        const conta = await this.contaRepository.findByNumero(numero);
+        if (!conta) throw new AppError('Conta não encontrada', 404);
+        return new ContaOutputDTO(conta);
     }
 
     async buscaDadosParaFinanciamento(contaId) {
-        const conta = await Conta.findByPk(contaId, {
-            include: {
-                model: Cliente,
-                as: 'cliente',
-                attributes: ['renda_mensal']
-            },
-            attributes: ['saldo']
-        });
-
-        if (!conta) {
-            throw new AppError('Conta não encontrada', 404);
-        }
-
-        if (!conta.cliente) {
-            throw new AppError('Cliente associado à conta não encontrado', 404);
+        const conta = await this.contaRepository.findDadosFinanciamento(contaId);
+        if (!conta || !conta.cliente) {
+            throw new AppError('Conta ou cliente não encontrado', 404);
         }
 
         return {
@@ -49,20 +28,29 @@ class ContaServices extends Services {
     }
 
     async alterarSaldo(contaId, novoSaldo) {
-        const conta = await Conta.findOne({ where: { id: contaId } });
+        const conta = await this.contaRepository.updateSaldo(contaId, novoSaldo);
+        if (!conta) throw new AppError('Conta não encontrada', 404);
+        return { mensagem: 'Saldo atualizado com sucesso' };
+    }
 
-        if (!conta) {
-            throw new AppError('Conta não encontrada', 404);
-        }
+    async criaRegistro(dto) {
+        const contaCriada = await this.repository.create(dto);
+        return new ContaOutputDTO(contaCriada);
+    }
 
-        try {
-            conta.saldo = novoSaldo;
-            await conta.save();
+    async atualizaRegistro(data, id) {
+        const contaAtualizada = await this.repository.update(data, id);
+        return new ContaOutputDTO(contaAtualizada);
+    }
 
-            return { mensagem: 'Saldo atualizado com sucesso' };
-        } catch (erro) {
-            throw new AppError('Erro ao alterar saldo', 500, [erro.message]);
-        }
+    async buscaUmPorId(id) {
+        const conta = await this.repository.findById(id);
+        return new ContaOutputDTO(conta);
+    }
+
+    async buscaTodosOsRegistros() {
+        const contas = await this.repository.findAll();
+        return contas.map(conta => new ContaOutputDTO(conta));
     }
 }
 
